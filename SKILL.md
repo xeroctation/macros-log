@@ -23,6 +23,51 @@ The skill instructions are in English, but you must reply in the user's language
 
 ---
 
+## ⚠️ Data persistence
+
+The skill files in the repository are **shared templates** — they are read-only and the same for everyone.
+All user data (profile, products, food log) lives **inside the current chat session only**.
+
+**What this means:**
+- A new chat = clean slate. Profile and product database won't be there.
+- Multiple users using the same skill each have their own isolated data per chat.
+- Data is NOT synced back to the repository automatically.
+
+**After onboarding, always tell the user once:**
+> "📌 Your data lives in this chat. If you ever want to move to a new chat — just say **'give me a data dump'** and I'll export everything."
+
+**Do NOT repeat this warning on every message. Say it once after profile setup, that's it.**
+
+### Command: data dump
+Triggers: "data dump", "export my data", "give me my data", "i'm moving to a new chat", "дамп данных", "экспорт данных"
+
+Export all data as copyable markdown blocks:
+
+~~~
+Here's your data dump — paste this at the start of a new chat to restore everything:
+
+---
+**my-profile.md:**
+[full file contents]
+
+---
+**my-products.md:**
+[full file contents]
+
+---
+**food-log.md (last 14 days):**
+[last 14 days of log entries only]
+~~~
+
+### Command: import data dump
+Triggers: user pastes a block containing "my-profile.md:" and "my-products.md:", or says "импортируй мои данные", "restore my data", "вот мои данные"
+
+1. Parse all three files from the pasted content
+2. Write them to the skill files
+3. Confirm: "✅ Data restored! Profile loaded, X products in database, log from [date] to [date]. Let's continue."
+
+---
+
 ## 🚀 ONBOARDING (first run)
 
 Check `my-profile.md`. If status is `NOT SET UP` — show the onboarding widget immediately.
@@ -210,6 +255,7 @@ function saveProfile() {
 1. Updates `my-profile.md` with all the data
 2. Sets status to `SET UP`
 3. Confirms: "Profile saved! Daily goal: X kcal. You can start logging food now."
+4. **Adds the data persistence notice once:** "📌 Your data lives in this chat. If you ever want to move to a new chat — just say **'give me a data dump'** and I'll export everything."
 
 **Unrealistic goals:** if target implies >1 kg/week loss or gain — note it and suggest a realistic pace, but still save what the user chose.
 
@@ -480,3 +526,4 @@ Never make up random numbers. If genuinely uncertain, say the range: "salmon is 
 9. **Ambiguous products:** "oil" without type → ask which kind. "Yogurt" without brand → use Greek yogurt as default. "Cheese" → use hard cheese as default
 10. **Be honest.** Don't praise average compliance. Comment factually and directly
 11. **Onboarding when logging without profile.** Log the food, but gently nudge toward setup
+12. **Data persistence notice — once only.** Say it after profile setup, never repeat it unprompted

@@ -25,22 +25,32 @@ Track your food, macros, workouts, and weight — all in plain text files, no ap
 
 ## 🚀 Installation
 
+### Claude.ai (web / mobile)
+1. Download ZIP from GitHub (green "Code" button → "Download ZIP")
+2. Unzip — you'll get a `macros-log/` folder with 5 files
+3. Go to claude.ai → Settings → Skills → Install from folder
+
 ### Claude Code
 ```bash
-# Option 1: personal (all projects)
-git clone https://github.com/YOUR_USERNAME/macros-log ~/.claude/skills/macros-log
+# Download ZIP and unzip into one of these locations:
+~/.claude/skills/macros-log/       # personal (works across all projects)
+.claude/skills/macros-log/         # project-level (only for current project)
 
-# Option 2: project-level
-git clone https://github.com/YOUR_USERNAME/macros-log .claude/skills/macros-log
+# Or clone:
+git clone https://github.com/xeroctation/macros-log ~/.claude/skills/macros-log
 ```
 
 ### OpenAI Codex CLI
 ```bash
-git clone https://github.com/YOUR_USERNAME/macros-log ~/.codex/skills/macros-log
+# Download ZIP and unzip into:
+~/.codex/skills/macros-log/
+
+# Or clone:
+git clone https://github.com/xeroctation/macros-log ~/.codex/skills/macros-log
 ```
 
-### Claude.ai (web/mobile)
-Download the `.skill` file from [Releases](../../releases) and install via Settings → Skills.
+### Any other SKILL.md-compatible assistant
+Copy the `macros-log/` folder into your assistant's skills directory.
 
 ---
 

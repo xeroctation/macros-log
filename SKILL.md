@@ -25,114 +25,193 @@ The skill instructions are in English, but you must reply in the user's language
 
 ## 🚀 ONBOARDING (first run)
 
-Check `my-profile.md`. If status is `NOT SET UP` — start onboarding.
+Check `my-profile.md`. If status is `NOT SET UP` — show the onboarding widget immediately.
 
-### Smart onboarding rules
-- If the user already provided some data in their first message — don't ask for it again
-- If you have all the data you need — calculate immediately and confirm
-- Ask only what you don't know yet
-- One question at a time
+**Do NOT ask questions one by one.** Instead, render this HTML widget as an artifact so the user fills everything in at once and clicks "Save profile". No back-and-forth questions.
 
-### Steps:
+````html
+<div style="padding: 1rem 0; max-width: 560px;">
 
-**Step 1 — Name**
-"Hi! I'm your nutrition tracker. What's your name?"
+<p style="font-size: 15px; font-weight: 500; margin: 0 0 1.5rem; color: var(--color-text-primary);">Set up your profile</p>
 
-**Step 2 — Sex**
-"Are you male or female?" *(affects BMR calculation)*
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+  <div>
+    <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Name</label>
+    <input type="text" id="name" placeholder="Your name" style="width: 100%; box-sizing: border-box;">
+  </div>
+  <div>
+    <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Sex</label>
+    <select id="sex" style="width: 100%; box-sizing: border-box;">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+  </div>
+</div>
 
-**Step 3 — Physical data**
-"Your age, height, and current weight? (e.g. 25 years old, 170 cm, 65 kg)"
+<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+  <div>
+    <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Age</label>
+    <input type="number" id="age" placeholder="25" min="10" max="99" style="width: 100%; box-sizing: border-box;">
+  </div>
+  <div>
+    <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Height (cm)</label>
+    <input type="number" id="height" placeholder="170" min="100" max="250" style="width: 100%; box-sizing: border-box;">
+  </div>
+  <div>
+    <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Weight (kg)</label>
+    <input type="number" id="weight" placeholder="70" min="30" max="300" style="width: 100%; box-sizing: border-box;">
+  </div>
+</div>
 
-**Step 4 — Goal**
-"What's your goal?
-1. 🔻 Lose fat
-2. 💪 Build muscle
-3. ⚖️ Maintain weight
-4. 🔥 Body recomposition (lose fat, keep muscle)"
+<div style="margin-bottom: 12px;">
+  <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Goal</label>
+  <select id="goal" style="width: 100%; box-sizing: border-box;">
+    <option value="cut">Lose fat</option>
+    <option value="bulk">Build muscle</option>
+    <option value="maintain">Maintain weight</option>
+    <option value="recomp">Body recomposition (lose fat, keep muscle)</option>
+    <option value="other">Other...</option>
+  </select>
+  <input type="text" id="goal-custom" placeholder="Describe your goal" style="width: 100%; box-sizing: border-box; margin-top: 6px; display: none;">
+</div>
 
-**Step 5 — Pace** *(skip if goal = maintain)*
+<div id="pace-block" style="margin-bottom: 12px;">
+  <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Pace</label>
+  <select id="pace" style="width: 100%; box-sizing: border-box;">
+    <option value="250">Gentle (~−0.25 kg/week, deficit 250 kcal)</option>
+    <option value="500" selected>Moderate (~−0.5 kg/week, deficit 500 kcal)</option>
+    <option value="750">Aggressive (~−0.75 kg/week, deficit 750 kcal)</option>
+    <option value="custom">Custom deficit/surplus...</option>
+  </select>
+  <input type="number" id="pace-custom" placeholder="kcal (e.g. 400)" style="width: 100%; box-sizing: border-box; margin-top: 6px; display: none;">
+</div>
 
-For fat loss / recomp:
-"How fast do you want to lose weight?
-1. Gentle (~−0.25 kg/week, deficit 250 kcal) — comfortable, minimal muscle loss
-2. Moderate (~−0.5 kg/week, deficit 500 kcal) — optimal for most people
-3. Aggressive (~−0.75 kg/week, deficit 750 kcal) — faster, harder to recover from"
+<div style="margin-bottom: 12px;">
+  <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Daily activity (excluding workouts)</label>
+  <select id="activity" style="width: 100%; box-sizing: border-box;">
+    <option value="1.2">Desk job, barely move</option>
+    <option value="1.3">Desk job, but walk 7–10k steps</option>
+    <option value="1.45">On feet all day (teacher, retail, waiter)</option>
+    <option value="1.6">Physical labour (construction, warehouse)</option>
+    <option value="custom">Other — I'll describe...</option>
+  </select>
+  <input type="text" id="activity-custom" placeholder="Describe your daily activity" style="width: 100%; box-sizing: border-box; margin-top: 6px; display: none;">
+</div>
 
-For muscle gain:
-"How fast do you want to gain?
-1. Clean bulk (+200 kcal) — minimal fat gain, slow
-2. Moderate (+400 kcal) — balance of speed and quality
-3. Fast bulk (+600 kcal) — maximum mass, but more fat too"
+<div style="margin-bottom: 12px;">
+  <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Workouts</label>
+  <select id="workout" style="width: 100%; box-sizing: border-box;">
+    <option value="0">None</option>
+    <option value="0.175">Light 1–2x/week</option>
+    <option value="0.25">Moderate 2–3x/week</option>
+    <option value="0.35">Heavy 3–4x/week</option>
+    <option value="0.425">Intense 5+x/week</option>
+    <option value="custom">Other — I'll describe...</option>
+  </select>
+  <input type="text" id="workout-custom" placeholder="Describe your workouts" style="width: 100%; box-sizing: border-box; margin-top: 6px; display: none;">
+</div>
 
-**Step 6 — Target weight** *(skip if goal = maintain)*
-"What's your target weight?"
+<div id="target-block" style="margin-bottom: 1.5rem;">
+  <label style="font-size: 12px; color: var(--color-text-secondary); display: block; margin-bottom: 4px;">Target weight (kg)</label>
+  <input type="number" id="target" placeholder="65" min="30" max="300" style="width: 100%; box-sizing: border-box;">
+</div>
 
-**Step 7 — Daily activity (excluding workouts)**
-"Describe a typical day without workouts:
-1. Desk job, barely move (<5k steps)
-2. Desk job, but walk a fair amount (7–10k steps)
-3. On my feet all day (teacher, retail, waiter)
-4. Physical labour (construction, warehouse, factory)"
+<div id="result-card" style="display: none; background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem;">
+  <p style="font-size: 12px; color: var(--color-text-secondary); margin: 0 0 10px;">Your profile</p>
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px;">
+    <div style="text-align: center;"><div style="font-size: 18px; font-weight: 500;" id="r-bmr">—</div><div style="font-size: 11px; color: var(--color-text-secondary);">BMR</div></div>
+    <div style="text-align: center;"><div style="font-size: 18px; font-weight: 500;" id="r-tdee">—</div><div style="font-size: 11px; color: var(--color-text-secondary);">TDEE</div></div>
+    <div style="text-align: center;"><div style="font-size: 18px; font-weight: 500;" id="r-goal">—</div><div style="font-size: 11px; color: var(--color-text-secondary);">Goal/day</div></div>
+    <div style="text-align: center;"><div style="font-size: 18px; font-weight: 500;" id="r-weeks">—</div><div style="font-size: 11px; color: var(--color-text-secondary);">Weeks</div></div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 10px;">
+    <div style="text-align: center;"><div style="font-size: 15px; font-weight: 500;" id="r-protein">—</div><div style="font-size: 11px; color: var(--color-text-secondary);">Protein g</div></div>
+    <div style="text-align: center;"><div style="font-size: 15px; font-weight: 500;" id="r-fat">—</div><div style="font-size: 11px; color: var(--color-text-secondary);">Fat g</div></div>
+    <div style="text-align: center;"><div style="font-size: 15px; font-weight: 500;" id="r-carbs">—</div><div style="font-size: 11px; color: var(--color-text-secondary);">Carbs g</div></div>
+  </div>
+</div>
 
-**Step 8 — Workouts**
-"Do you exercise or go to the gym?
-1. No
-2. Light workouts 1–2x/week (yoga, light cardio, walks)
-3. Moderate workouts 2–3x/week (fitness, running, cycling)
-4. Heavy workouts 3–4x/week (strength training, CrossFit, HIIT)
-5. Intense training 5+x/week (competitive sports)"
+<div style="display: flex; gap: 8px;">
+  <button id="calc-btn" onclick="calculate()" style="flex: 1;">Calculate</button>
+  <button id="save-btn" onclick="saveProfile()" style="flex: 1; display: none;">Save profile ↗</button>
+</div>
 
-If they chose 3, 4, or 5 → follow up: "What exactly do you do, and how long is a typical session?"
+</div>
+<script>
+function toggleCustom(selId, inpId) {
+  const sel = document.getElementById(selId);
+  const inp = document.getElementById(inpId);
+  sel.addEventListener('change', () => { inp.style.display = (sel.value === 'custom' || sel.value === 'other') ? 'block' : 'none'; });
+}
+toggleCustom('goal','goal-custom');
+toggleCustom('pace','pace-custom');
+toggleCustom('activity','activity-custom');
+toggleCustom('workout','workout-custom');
 
-### Calculation:
+const goalEl = document.getElementById('goal');
+goalEl.addEventListener('change', function() {
+  const g = this.value;
+  document.getElementById('pace-block').style.display = g === 'maintain' ? 'none' : 'block';
+  document.getElementById('target-block').style.display = g === 'maintain' ? 'none' : 'block';
+  const p = document.getElementById('pace');
+  if (g === 'bulk') {
+    p.innerHTML = '<option value="-200">Clean bulk (+200 kcal)</option><option value="-400" selected>Moderate (+400 kcal)</option><option value="-600">Fast bulk (+600 kcal)</option><option value="custom">Custom surplus...</option>';
+  } else {
+    p.innerHTML = '<option value="250">Gentle (~-0.25 kg/week, 250 kcal deficit)</option><option value="500" selected>Moderate (~-0.5 kg/week, 500 kcal deficit)</option><option value="750">Aggressive (~-0.75 kg/week, 750 kcal deficit)</option><option value="custom">Custom deficit...</option>';
+  }
+  document.getElementById('pace-custom').style.display = 'none';
+});
 
-**BMR (Mifflin-St Jeor):**
-- Male: `10×weight + 6.25×height − 5×age + 5`
-- Female: `10×weight + 6.25×height − 5×age − 161`
+function calculate() {
+  const age = parseFloat(document.getElementById('age').value);
+  const height = parseFloat(document.getElementById('height').value);
+  const weight = parseFloat(document.getElementById('weight').value);
+  if (!age || !height || !weight) { alert('Please fill in age, height and weight'); return; }
+  const sex = document.getElementById('sex').value;
+  const goal = document.getElementById('goal').value;
+  const target = parseFloat(document.getElementById('target').value);
+  const actSel = document.getElementById('activity');
+  const actVal = actSel.value === 'custom' ? 1.375 : parseFloat(actSel.value);
+  const actDesc = actSel.value === 'custom' ? document.getElementById('activity-custom').value : actSel.options[actSel.selectedIndex].text;
+  const wrkSel = document.getElementById('workout');
+  const wrkVal = wrkSel.value === 'custom' ? 0.25 : parseFloat(wrkSel.value);
+  const wrkDesc = wrkSel.value === 'custom' ? document.getElementById('workout-custom').value : wrkSel.options[wrkSel.selectedIndex].text;
+  const paceSel = document.getElementById('pace');
+  const pace = paceSel.value === 'custom' ? parseFloat(document.getElementById('pace-custom').value) || 500 : parseFloat(paceSel.value) || 0;
+  const bmr = sex === 'male' ? Math.round(10*weight + 6.25*height - 5*age + 5) : Math.round(10*weight + 6.25*height - 5*age - 161);
+  const tdee = Math.round(bmr * (actVal + wrkVal));
+  const goalKcal = goal === 'maintain' ? tdee : goal === 'bulk' ? tdee + Math.abs(pace) : tdee - Math.abs(pace);
+  const protein = Math.round(weight * 2);
+  const fat = Math.round(goalKcal * 0.27 / 9);
+  const carbs = Math.round((goalKcal - protein*4 - fat*9) / 4);
+  const weeks = (target && weight && goal !== 'maintain' && pace > 0) ? Math.round(Math.abs(weight - target) / (Math.abs(pace) / 1000)) : '—';
+  document.getElementById('r-bmr').textContent = bmr;
+  document.getElementById('r-tdee').textContent = tdee;
+  document.getElementById('r-goal').textContent = goalKcal;
+  document.getElementById('r-weeks').textContent = weeks;
+  document.getElementById('r-protein').textContent = protein + 'g';
+  document.getElementById('r-fat').textContent = fat + 'g';
+  document.getElementById('r-carbs').textContent = carbs + 'g';
+  document.getElementById('result-card').style.display = 'block';
+  document.getElementById('save-btn').style.display = 'block';
+  window._pd = { sex, age, height, weight, goal, pace, target, bmr, tdee, goalKcal, protein, fat, carbs, actDesc, wrkDesc };
+}
 
-**TDEE = BMR × activity multiplier:**
+function saveProfile() {
+  const d = window._pd; if (!d) { calculate(); return; }
+  const name = document.getElementById('name').value || 'User';
+  const goalLabel = {cut:'Lose fat',bulk:'Build muscle',maintain:'Maintain',recomp:'Recomposition',other:document.getElementById('goal-custom').value}[d.goal] || d.goal;
+  sendPrompt('Save my profile in my-profile.md:\nName: '+name+'\nSex: '+d.sex+'\nAge: '+d.age+', Height: '+d.height+'cm, Weight: '+d.weight+'kg, Target: '+(d.target||'—')+'kg\nGoal: '+goalLabel+'\nDeficit/surplus: '+d.pace+' kcal\nActivity: '+d.actDesc+'\nWorkouts: '+d.wrkDesc+'\nBMR: '+d.bmr+', TDEE: '+d.tdee+', Daily goal: '+d.goalKcal+' kcal\nProtein: '+d.protein+'g, Fat: '+d.fat+'g, Carbs: '+d.carbs+'g\nStatus: SET UP');
+}
+</script>
+````
 
-| Activity level | Multiplier |
-|---------------|-----------|
-| Sedentary, no workouts | 1.2 |
-| Sedentary + 7–10k steps/day | 1.3 |
-| On feet all day (no gym) | 1.45 |
-| Physical labour | 1.6 |
-| Light workouts 1–2x/week | 1.375 |
-| Moderate workouts 2–3x/week | 1.55 |
-| Heavy workouts 3–4x/week | 1.65 |
-| Intense training 5+x/week | 1.725 |
-| Physical labour + training | 1.9 |
+**After user clicks "Save profile"**, the widget sends all data via sendPrompt. Claude receives it and:
+1. Updates `my-profile.md` with all the data
+2. Sets status to `SET UP`
+3. Confirms: "Profile saved! Daily goal: X kcal. You can start logging food now."
 
-*If gym days and rest days differ significantly — calculate TDEE separately for each, then take a weighted weekly average.*
-
-**Macro goals:**
-- Protein: 1.8–2.2g × kg bodyweight (with training), 1.5–1.8g × kg (without)
-- Fat: 25–30% of total calories
-- Carbs: remaining calories
-
-**Unrealistic goals:** if the user wants to lose/gain more than 1 kg/week — gently explain it's not sustainable, suggest a realistic pace instead.
-
-**Show summary and ask for confirmation:**
-```
-Here's your profile:
-
-  Weight: X kg | Height: X cm | Age: X
-  BMR: X kcal | TDEE: X kcal
-  Daily goal: X kcal ([deficit/surplus]: X kcal)
-
-  Daily macros:
-    Protein:  Xg
-    Fat:      Xg
-    Carbs:    Xg
-
-  To reach your goal (X kg): ~X weeks at this pace
-
-Does this look right, or do you want to adjust anything?
-```
-
-After confirmation → update `my-profile.md`, set status to `SET UP`.
+**Unrealistic goals:** if target implies >1 kg/week loss or gain — note it and suggest a realistic pace, but still save what the user chose.
 
 ---
 
